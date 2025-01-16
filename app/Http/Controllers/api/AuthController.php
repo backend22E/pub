@@ -49,6 +49,10 @@ class AuthController extends ResponseController {
 
     public function logout() {
 
+        $user = auth( "sanctum" )->user();
+        $user->currentAccessToken()->delete();
+
+        return $this->sendResponse( $user->name, "Sikeres kijelentkezés" );
     }
 
     public function getUsers() {
