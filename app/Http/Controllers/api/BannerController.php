@@ -31,18 +31,26 @@ class BannerController extends Controller {
         $user->update();
     }
 
-    public function getBanningTime() {
+    public function getBanningTime( $name ) {
 
+        $user = User::where( "name", $name )->first();
 
+        return $user->banning_time;
     }
 
-    public function setBanningTime() {
+    public function setBanningTime( $name ) {
 
+        $user = User::where( "name", $name )->first();
+        $user->banning_time = Carbon::now()->addminutes( 1 );
 
+        $user->update();
     }
 
-    public function resetBanningTime() {
+    public function resetBanningTime( $name ) {
 
+        $user = User::where( "name", $name )->first();
+        $user->banning_time = null;
 
+        $user->update();
     }
 }

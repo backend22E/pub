@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
 class PackageRequest extends FormRequest
 {
@@ -23,8 +25,29 @@ class PackageRequest extends FormRequest
     {
         return [
 
-
+            "package" => "required|min:3|max:20|unique:packages,package|alpha",
 
         ];
+    }
+
+    public function messages() {
+
+        return [
+
+            "package.required" => "Típus elvárt",
+            "package.min" => "Túl rövid név",
+            "package.max" => "Túl hosszú név",
+            "package.alpha" => "Nem lehetnek számok",
+            "package.unique" => "Típus már létezik"
+        ];
+    }
+
+    public function failedValidation( Validator $validator ) {
+
+        throw new HttpResponseException( response()->json([
+            "success" => false,
+            "error" => $validator->errors(),
+            "message" => "Adatbeviteli hiba"
+        ]));
     }
 }

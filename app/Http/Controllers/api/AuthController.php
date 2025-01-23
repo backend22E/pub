@@ -33,28 +33,42 @@ class AuthController extends ResponseController {
         if( Auth::attempt([ "name" => $request["name"], "password" => $request["password"]])) {
 
             $user = Auth::user();
-            ( new BannerController )->resetLoginCounter( $user->name );
+            $banningTime = ( new BannerController )->getBanningTime( $user->name );
 
-            $token = $user->createToken( $user->name . "Token" )->plainTextToken;
-            $data = [
-                "name" => $user->name,
-                "token" => $token
-            ];
+            if( $banningTime != null && Carbon::now() < $banningTime ) {
 
-            return $this->sendResponse( $data, "Sikeres bejelentkezés" );
+                $errorMessage = [
+                    "Következő lehetőség:",
+                    $banningTime
+                ];
+                return $this->sendError( "Azonosítási hiba", $errorMessage, 405 );
 
+            }else {
+                ( new BannerController )->resetLoginCounter( $user->name );
+                ( new BannerController )->resetBanningTime( $user->name );
+
+                $token = $user->createToken( $user->name . "Token" )->plainTextToken;
+                $data = [
+                    "name" => $user->name,
+                    "token" => $token
+                ];
+
+                return $this->sendResponse( $data, "Sikeres bejelentkezés" );
+            }
         }else {
 
             ( new BannerController )->setLoginCounter( $request[ "name" ]);
             $counter = ( new BannerController )->getLoginCounter( $request[ "name" ]);
+
             if( $counter  > 3 ) {
 
-                $time = Carbon::now()->addHours( 1 );
-                return $time;
+                ( new BannerController )->setBanningTime( $request[ "name" ]);
+
+                return $this->sendError( "Azonosítási hiba", "Hibás felhasználónév vagy jelszó", 401 );
+
             }
 
-            return $counter;
-            //return $this->sendError( "Azonosítási hiba", "Hibás felhasználónév vagy jelszó", 405 );
+            return $this->sendError( "Azonosítási hiba", "Hibás felhasználónév vagy jelszó", 401 );
         }
     }
 

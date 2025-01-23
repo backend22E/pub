@@ -44,30 +44,30 @@ class DrinkController extends ResponseController {
 
         $drink->save();
 
-        return response( new DrinkResource( $drink ));
+        return $this->sendResponse( $drink, "Ital felvéve" );
     }
 
     public function updateDrink( Request $request ) {
 
-        $drink = $this->getDrink( $request );
+        $drink = Drink::find( $request[ "id" ]);
 
         $drink->drink = $request[ "drink" ];
         $drink->amount = $request[ "amount" ];
-        $drink->type_id = $request[ "type_id" ];
-        $drink->package_id = $request[ "package_id" ];
+        $drink->type_id = ( new TypeController )->getTypeId( $request[ "type" ]);
+        $drink->package_id = ( new PackageController )->getPackageId( $request[ "package" ] );
 
         $drink->update();
 
-        return response( new DrinkResource( $drink ));
+        return $this->sendResponse( new DrinkResource( $drink ), "Ital módosítva" );
     }
 
     public function destroyDrink( Request $request ) {
 
-        $drink = Drink::where( "drink", $request[ "drink" ])->first();
+        $drink = Drink::find( $request[ "id" ]);
         if( !is_null( $drink )) {
 
-            //$drink->delete();
-            return $drink;
+            $drink->delete();
+            return $this->sendResponse( new DrinkResource( $drink ), "Ital törölve" );
 
         }else {
 
