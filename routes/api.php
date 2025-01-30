@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\DrinkController;
 use App\Http\Controllers\api\TypeController;
 use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\PizzaController;
 
 Route::post( "/register", [ AuthController::class, "register" ]);
 Route::post( "/login", [ AuthController::class, "login" ]);
@@ -21,3 +22,11 @@ Route::get( "/types", [ TypeController::class, "getTypes" ]);
 Route::post( "/newtype", [ TypeController::class, "newType" ]);
 Route::put( "/updatetype", [ TypeController::class, "modifyType" ]);
 Route::delete( "/deletetype", [ TypeController::class, "destroyType" ]);
+
+
+Route::get( "/pizzak", [ PizzaController::class, "getPizzas" ]);
+Route::get( "/pizza", [ PizzaController::class, "getPizza" ]);
+Route::post( "/createpizza", [ PizzaController::class, "createPizza" ]);
+Route::post( "/updatepizza", [ PizzaController::class, "setPizza" ]);
+Route::post( "/deletepizza", [ PizzaController::class, "destroyPizza" ]);
+Route::get( "/drinkdb", [ PizzaController::class, "getDrinksFromDb" ]);

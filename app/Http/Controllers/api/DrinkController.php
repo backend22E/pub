@@ -13,7 +13,7 @@ class DrinkController extends ResponseController {
 
     public function getDrinks() {
 
-        $drinks =Drink::with( "type", "package" )->get();
+        $drinks = Drink::with( "type", "package" )->get();
 
         return $this->sendResponse( DrinkResource::collection( $drinks ), "Adat betöltve" );
     }
