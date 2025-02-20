@@ -8,6 +8,7 @@ use App\Models\Drink;
 use App\Http\Resources\Drink as DrinkResource;
 use App\Http\Controllers\api\ResponseController;
 use App\Http\Requests\DrinkRequest;
+use Illuminate\Support\Facades\Gate;
 
 class DrinkController extends ResponseController {
 
@@ -34,6 +35,19 @@ class DrinkController extends ResponseController {
 
     public function newDrink( DrinkRequest $request ) {
 
+        $user = auth( "sanctum" )->user();
+        Gate::before( function( $user ){
+
+            if( $user->admin == 2 ) {
+
+                return true;
+            }
+        });
+        if( !Gate::allows( "admin" )) {
+
+            return $this->sendError( "Azonosítási hiba", "Nincs jogosultság", 401 );
+        }
+
         $request->validated();
 
         $drink = new Drink();
@@ -42,7 +56,7 @@ class DrinkController extends ResponseController {
         $drink->type_id = ( new TypeController )->getTypeId( $request[ "type" ]);
         $drink->package_id = ( new PackageController )->getPackageId( $request[ "package" ] );
 
-        $drink->save();
+        //$drink->save();
 
         return $this->sendResponse( $drink, "Ital felvéve" );
     }

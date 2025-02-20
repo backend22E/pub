@@ -20,7 +20,8 @@ class AuthController extends ResponseController {
         $user = User::create([
             "name" => $request[ "name" ],
             "email" => $request[ "email" ],
-            "password" => bcrypt( $request[ "password" ])
+            "password" => bcrypt( $request[ "password" ]),
+            "admin" => 0
         ]);
 
         return $this->sendResponse( $user, "Sikeres regisztráció" );
