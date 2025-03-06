@@ -56,14 +56,33 @@ class DrinkController extends ResponseController {
         $drink->type_id = ( new TypeController )->getTypeId( $request[ "type" ]);
         $drink->package_id = ( new PackageController )->getPackageId( $request[ "package" ] );
 
-        //$drink->save();
+        $drink->save();
 
         return $this->sendResponse( $drink, "Ital felvéve" );
     }
 
-    public function updateDrink( Request $request ) {
+    public function updateDrink( DrinkRequest $request ) {
+
+        $user = auth( "sanctum" )->user();
+        Gate::before( function( $user ){
+
+            if( $user->admin == 2 ) {
+
+                return true;
+            }
+        });
+        if( !Gate::allows( "admin" )) {
+
+            return $this->sendError( "Azonosítási hiba", "Nincs jogosultság", 401 );
+        }
+
+        $request->validated();
 
         $drink = Drink::find( $request[ "id" ]);
+        if( !$drink ) {
+
+            return $this->sendError( "Adathiba", "Nincs ilyen ital", 406 );
+        }
 
         $drink->drink = $request[ "drink" ];
         $drink->amount = $request[ "amount" ];

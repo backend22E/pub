@@ -64,6 +64,8 @@ class AuthController extends ResponseController {
             if( $counter  > 3 ) {
 
                 ( new BannerController )->setBanningTime( $request[ "name" ]);
+                $time = Carbon::now();
+                ( new MailController )->sendMail( $request[ "name" ], $time );
 
                 return $this->sendError( "Azonosítási hiba", "Hibás felhasználónév vagy jelszó", 401 );
 
